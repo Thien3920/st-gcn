@@ -12,9 +12,9 @@ import torch.optim as optim
 
 # torchlight
 import torchlight
-from torchlight import str2bool
-from torchlight import DictAction
-from torchlight import import_class
+from torchlight.torchlight import str2bool
+from torchlight.torchlight import DictAction
+from torchlight.torchlight import import_class
 
 from .io import IO
 
