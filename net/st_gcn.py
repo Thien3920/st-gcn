@@ -57,36 +57,33 @@ class Model(nn.Module):
         # initialize parameters for edge importance weighting
         if edge_importance_weighting:
             self.edge_importance = nn.ParameterList([
-                nn.Parameter(torch.ones(self.A.size()))
+                nn.Parameter(torch.ones(A.size()))
                 for i in self.st_gcn_networks
             ])
         else:
             self.edge_importance = [1] * len(self.st_gcn_networks)
 
-        # fcn for prediction
-        self.fcn = nn.Conv2d(256, num_class, kernel_size=1)
+        if num_class is not None:
+            self.cls = nn.Conv2d(256, num_class, kernel_size=1)
+        else:
+            self.cls = lambda x: x
 
     def forward(self, x):
-
-        # data normalization
-        N, C, T, V, M = x.size()
-        x = x.permute(0, 4, 3, 1, 2).contiguous()
-        x = x.view(N * M, V * C, T)
+        # data normalization.
+        N, C, T, V = x.size()
+        x = x.permute(0, 3, 1, 2).contiguous()  # (N, V, C, T)
+        x = x.view(N, V * C, T)
         x = self.data_bn(x)
-        x = x.view(N, M, V, C, T)
-        x = x.permute(0, 1, 3, 4, 2).contiguous()
-        x = x.view(N * M, C, T, V)
+        x = x.view(N, V, C, T)
+        x = x.permute(0, 2, 3, 1).contiguous()
+        x = x.view(N, C, T, V)
 
-        # forwad
+        # forward.
         for gcn, importance in zip(self.st_gcn_networks, self.edge_importance):
-            x, _ = gcn(x, self.A * importance)
+            x = gcn(x, self.A * importance)
 
-        # global pooling
         x = F.avg_pool2d(x, x.size()[2:])
-        x = x.view(N, M, -1, 1, 1).mean(dim=1)
-
-        # prediction
-        x = self.fcn(x)
+        x = self.cls(x)
         x = x.view(x.size(0), -1)
 
         return x
@@ -191,7 +188,7 @@ class st_gcn(nn.Module):
     def forward(self, x, A):
 
         res = self.residual(x)
-        x, A = self.gcn(x, A)
+        x = self.gcn(x, A)
         x = self.tcn(x) + res
 
-        return self.relu(x), A
+        return self.relu(x)
