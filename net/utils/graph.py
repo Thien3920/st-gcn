@@ -72,6 +72,13 @@ class Graph():
             self.center = 2
         # elif layout=='customer settings'
         #     pass
+        elif layout == 'coco_cut':
+            self.num_node = 14
+            self_link = [(i, i) for i in range(self.num_node)]
+            neighbor_link = [(6, 4), (4, 2), (2, 13), (13, 1), (5, 3), (3, 1), (12, 10),
+                             (10, 8), (8, 2), (11, 9), (9, 7), (7, 1), (13, 0)]
+            self.edge = self_link + neighbor_link
+            self.center = 13
         else:
             raise ValueError("Do Not Exist This Layout.")
 
@@ -117,6 +124,9 @@ class Graph():
                     A.append(a_further)
             A = np.stack(A)
             self.A = A
+        elseif 
+        (6, 4), (4, 2), (2, 13), (13, 1), (5, 3), (3, 1), (12, 10),
+                             (10, 8), (8, 2), (11, 9), (9, 7), (7, 1), (13, 0)
         else:
             raise ValueError("Do Not Exist This Strategy")
 
