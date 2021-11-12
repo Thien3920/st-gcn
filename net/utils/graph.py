@@ -23,7 +23,7 @@ class Graph():
     """
 
     def __init__(self,
-                 layout='openpose',
+                 layout='coco_cut',
                  strategy='uniform',
                  max_hop=1,
                  dilation=1):
@@ -124,9 +124,6 @@ class Graph():
                     A.append(a_further)
             A = np.stack(A)
             self.A = A
-        elseif 
-        (6, 4), (4, 2), (2, 13), (13, 1), (5, 3), (3, 1), (12, 10),
-                             (10, 8), (8, 2), (11, 9), (9, 7), (7, 1), (13, 0)
         else:
             raise ValueError("Do Not Exist This Strategy")
 
